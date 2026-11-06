@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Sunrose Technologies</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=Poppins:wght@500;700&amp;display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  [hidden]{display:none!important}
+  body{background:var(--navy)}
+  .a-top{position:sticky;top:0;z-index:20;background:rgba(7,20,38,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .a-top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;height:64px}
+  .a-user{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);min-width:0}
+  .a-user span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+  .a-tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;scrollbar-width:none}
+  .a-tabs::-webkit-scrollbar{display:none}
+  .a-tabs button{flex:0 0 auto;min-height:42px;padding:9px 16px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--silver);font:600 .9rem var(--body);cursor:pointer}
+  .a-tabs button[aria-selected="true"]{background:rgba(247,165,49,.14);border-color:var(--gold);color:var(--text)}
+  .a-main{padding:18px 0 80px}
+  .a-panel{display:none}.a-panel.on{display:block}
+  .a-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin:10px 0 18px}
+  .a-h h2{font-size:1.5rem;margin:0}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .kpi{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+  .kpi b{display:block;font-family:var(--head);font-size:2rem;color:var(--text);line-height:1.1}
+  .kpi span{font-size:.85rem;color:var(--muted)}
+  .rows{display:grid;gap:10px}
+  .row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(15,34,64,.55);cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%}
+  .row:hover,.row:focus-visible{border-color:var(--line-2)}
+  .row small{color:var(--dim);font-size:.8rem}
+  .row strong{color:var(--text);font-family:var(--head)}
+  .row .sub{display:block;color:var(--muted);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{display:inline-flex;align-items:center;font:700 .7rem var(--head);letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;white-space:nowrap}
+  .s-new{background:rgba(247,165,49,.15);color:var(--gold)}.s-contacted,.s-quoted{background:rgba(0,212,255,.1);color:var(--cyan)}
+  .s-won,.s-published,.s-active{background:rgba(74,222,128,.12);color:#86EFAC}.s-lost,.s-closed,.s-draft,.s-unsubscribed{background:rgba(169,183,204,.12);color:var(--muted)}
+  .filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+  .filters select,.filters input{min-height:44px;padding:9px 12px;border-radius:12px;border:1px solid var(--line-2);background:#0A1A31;color:var(--text);font:inherit;font-size:.92rem}
+  .filters input{flex:1 1 200px}
+  .detail{border:1px solid var(--line-2);border-radius:18px;background:var(--surface);padding:24px;margin-bottom:18px}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:8px 16px;margin:14px 0 18px;font-size:.94rem}
+  .kv dt{color:var(--dim)}.kv dd{margin:0;color:var(--silver);word-break:break-word}
+  .msg{white-space:pre-wrap;background:#0A1A31;border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--silver);margin-bottom:16px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn-danger{border:1px solid rgba(248,113,113,.5);color:#FCA5A5;background:transparent}
+  .btn-danger:hover{background:rgba(248,113,113,.1)}
+  .plan-row{display:grid;grid-template-columns:1.4fr 1fr .8fr auto auto;gap:12px;align-items:end;padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(15,34,64,.55)}
+  .plan-row label{font-size:.8rem;color:var(--dim);display:block;margin-bottom:6px}
+  .plan-row input[type=number],.plan-row select{width:100%;min-height:44px;padding:9px 12px;border-radius:10px;border:1px solid var(--line-2);background:#0A1A31;color:var(--text);font:inherit}
+  .chk{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--silver);font-size:.9rem}
+  .chk input{width:20px;height:20px;accent-color:var(--gold)}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:90;padding:12px 18px;border-radius:12px;font-size:.92rem;box-shadow:var(--shadow);display:none;max-width:calc(100% - 32px)}
+  .toast.ok{display:block;background:#14532D;color:#DCFCE7}.toast.bad{display:block;background:#7F1D1D;color:#FEE2E2}
+  .login{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+  .login .form-card{width:100%;max-width:440px}
+  .help{font-size:.85rem;color:var(--dim);margin-top:8px}
+  .code{font-family:ui-monospace,Menlo,monospace;font-size:.82rem;background:#0A1A31;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;word-break:break-all;color:var(--silver)}
+  .empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:14px}
+  @media (max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-row{grid-template-columns:1fr 1fr}.plan-row .pn{grid-column:1/-1}}
+  @media (max-width:560px){.row{grid-template-columns:1fr auto}.row .d{grid-column:1/-1;order:-1}.kv{grid-template-columns:1fr}.kv dt{margin-top:6px}.detail{padding:18px}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<main id="login-view" class="login" hidden>
+  <div class="form-card">
+    <a href="index.html" class="brand" aria-label="Sunrose Technologies home" style="margin-bottom:22px"><svg viewBox="20 36.5 160 160" aria-hidden="true"><rect x="20" y="36.5" width="160" height="160" rx="36" fill="#0F2240" stroke="#2A4672" stroke-width="2"/><defs><linearGradient id="lgA" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="168"><stop offset="0" stop-color="#FFD166"/><stop offset=".55" stop-color="#F7A531"/><stop offset="1" stop-color="#FF6B3D"/></linearGradient><clipPath id="lgAc"><circle cx="100" cy="140" r="64"/></clipPath></defs><g fill="url(#lgA)"><g clip-path="url(#lgAc)"><rect x="41" y="122" width="18" height="18"/><rect x="65" y="106" width="18" height="34"/><rect x="89" y="90" width="18" height="50"/><rect x="113" y="74" width="18" height="66"/><rect x="137" y="58" width="18" height="82"/></g><rect x="28" y="148" width="144" height="9" rx="4.5"/></g></svg><span class="brand-text"><b>SUNROSE</b><small>TECHNOLOGIES</small></span></a>
+    <h1 style="font-size:1.6rem" id="login-title">Admin sign in</h1>
+    <p class="muted" id="login-sub">For Sunrose Technologies staff only.</p>
+    <form id="login-form" novalidate>
+      <div class="field" style="margin-bottom:14px"><label for="l-email">Email</label><input id="l-email" type="email" autocomplete="username" required></div>
+      <div class="field" style="margin-bottom:18px"><label for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-gold" type="submit" style="width:100%;justify-content:center"><span class="spinner" aria-hidden="true"></span>Sign in</button>
+      <p style="margin:16px 0 0;text-align:center"><button type="button" id="forgot" class="link-arrow" style="background:none;border:0;cursor:pointer;font:inherit;color:var(--gold)">Forgot password?</button></p>
+    </form>
+    <form id="newpass-form" novalidate hidden>
+      <div class="field" style="margin-bottom:18px"><label for="n-pass">New password (at least 10 characters)</label><input id="n-pass" type="password" autocomplete="new-password" minlength="10" required></div>
+      <button class="btn btn-gold" type="submit" style="width:100%;justify-content:center">Save new password</button>
+    </form>
+    <div id="login-status" class="form-status" role="status" aria-live="polite" tabindex="-1"></div>
+  </div>
+</main>
+
+<!-- ============ APP ============ -->
+<div id="app-view" hidden>
+  <header class="a-top"><div class="wrap">
+    <a href="index.html" class="brand" aria-label="Sunrose Technologies website"><svg viewBox="20 36.5 160 160" aria-hidden="true"><rect x="20" y="36.5" width="160" height="160" rx="36" fill="#0F2240" stroke="#2A4672" stroke-width="2"/><defs><linearGradient id="lgB" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="168"><stop offset="0" stop-color="#FFD166"/><stop offset=".55" stop-color="#F7A531"/><stop offset="1" stop-color="#FF6B3D"/></linearGradient><clipPath id="lgBc"><circle cx="100" cy="140" r="64"/></clipPath></defs><g fill="url(#lgB)"><g clip-path="url(#lgBc)"><rect x="41" y="122" width="18" height="18"/><rect x="65" y="106" width="18" height="34"/><rect x="89" y="90" width="18" height="50"/><rect x="113" y="74" width="18" height="66"/><rect x="137" y="58" width="18" height="82"/></g><rect x="28" y="148" width="144" height="9" rx="4.5"/></g></svg><span class="brand-text"><b>SUNROSE</b><small>ADMIN</small></span></a>
+    <div class="a-user"><span id="who"></span><button class="btn btn-line btn-sm" id="logout" type="button">Sign out</button></div>
+  </div></header>
+  <div class="wrap">
+    <nav class="a-tabs" role="tablist" aria-label="Admin sections" id="tabs"></nav>
+    <main class="a-main" id="main">
+      <section class="a-panel" id="p-overview" role="tabpanel"></section>
+      <section class="a-panel" id="p-enquiries" role="tabpanel"></section>
+      <section class="a-panel" id="p-pricing" role="tabpanel"></section>
+      <section class="a-panel" id="p-articles" role="tabpanel"></section>
+      <section class="a-panel" id="p-subscribers" role="tabpanel"></section>
+      <section class="a-panel" id="p-team" role="tabpanel"></section>
+    </main>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var SB = "https://pnxsbvhpquyeqmogyyds.supabase.co", ANON = "sb_publishable_kyoDkdMEKn7RWRI9vZF1cA_RpEBgkqN";
+  var SITE = location.origin.indexOf("sunrosetechnologies.com") > -1 ? location.origin : "https://sunrosetechnologies.com";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var fmtDate = function (d, time) { if (!d) return ""; var x = new Date(d); return x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + (time ? " " + x.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : ""); };
+  var toastT;
+  function toast(msg, bad) { var t = $("#toast"); t.textContent = msg; t.className = "toast " + (bad ? "bad" : "ok"); clearTimeout(toastT); toastT = setTimeout(function () { t.className = "toast"; }, 3500); }
+
+  if (SB.indexOf("http") !== 0) {
+    document.body.innerHTML = '<main class="login"><div class="form-card"><h1 style="font-size:1.5rem">Admin not connected yet</h1><p class="muted">The database address has not been added to this site yet. Send Claude your Supabase Project URL and publishable/anon key, then upload the rebuilt files.</p></div></main>';
+    return;
+  }
+
+  /* ---------- Auth (Supabase Auth REST API) ---------- */
+  var KEY = "sunrose_admin_session", session = null;
+  function store(s) { session = s; try { if (s) sessionStorage.setItem(KEY, JSON.stringify(s)); else sessionStorage.removeItem(KEY); } catch (e) {} }
+  function load() { try { return JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function fromToken(j) { return { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (Number(j.expires_in) || 3600) * 1000, user: j.user ? { id: j.user.id, email: j.user.email } : (session && session.user) }; }
+  function authHeaders(userToken) {
+    var h = { apikey: ANON, "Content-Type": "application/json" };
+    if (userToken) h.Authorization = "Bearer " + userToken; else if (ANON.indexOf("eyJ") === 0) h.Authorization = "Bearer " + ANON;
+    return h;
+  }
+  function authFetch(path, body, method) {
+    return fetch(SB + "/auth/v1/" + path, { method: method || "POST", headers: authHeaders(method === "PUT" && session ? session.access_token : null), body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error_description || j.msg || j.message || "Request failed"); return j; }); });
+  }
+  function refreshIfNeeded() {
+    if (!session) return Promise.reject(new Error("Not signed in"));
+    if (session.expires_at - Date.now() > 60000) return Promise.resolve();
+    return authFetch("token?grant_type=refresh_token", { refresh_token: session.refresh_token }).then(function (j) { store(fromToken(j)); })
+      .catch(function (e) { store(null); showLogin("Your session expired. Please sign in again."); throw e; });
+  }
+  function api(path, opt) {
+    opt = opt || {};
+    return refreshIfNeeded().then(function () {
+      var h = { apikey: ANON, Authorization: "Bearer " + session.access_token, "Content-Type": "application/json" };
+      if (opt.prefer) h.Prefer = opt.prefer;
+      return fetch(SB + "/rest/v1/" + path, { method: opt.method || "GET", headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined });
+    }).then(function (r) {
+      if (r.status === 204) return { data: null, r: r };
+      return r.json().catch(function () { return null; }).then(function (j) {
+        if (!r.ok) throw new Error((j && (j.message || j.hint)) || ("Error " + r.status));
+        return { data: j, r: r };
+      });
+    });
+  }
+  function count(path) {
+    return api(path + (path.indexOf("?") > -1 ? "&" : "?") + "select=id&limit=1", { prefer: "count=exact" }).then(function (x) {
+      var cr = x.r.headers.get("content-range") || ""; var n = cr.split("/")[1]; return n && n !== "*" ? Number(n) : (x.data ? x.data.length : 0);
+    }).catch(function () { return "–"; });
+  }
+
+  /* ---------- Login screens ---------- */
+  function loginStatus(kind, msg) { var s = $("#login-status"); s.className = "form-status " + kind; s.textContent = msg; }
+  function showLogin(msg) {
+    $("#app-view").hidden = true; $("#login-view").hidden = false;
+    $("#login-form").hidden = false; $("#newpass-form").hidden = true;
+    $("#login-title").textContent = "Admin sign in"; $("#login-sub").textContent = "For Sunrose Technologies staff only.";
+    if (msg) loginStatus("bad", msg); else $("#login-status").className = "form-status";
+  }
+  $("#login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = $("#l-email").value.trim(), pass = $("#l-pass").value, b = $("#login-form button[type=submit]");
+    if (!email || !pass) { loginStatus("bad", "Please enter your email and password."); return; }
+    b.disabled = true; b.classList.add("loading");
+    authFetch("token?grant_type=password", { email: email, password: pass })
+      .then(function (j) { store(fromToken(j)); $("#l-pass").value = ""; return start(); })
+      .catch(function (err) { loginStatus("bad", /invalid/i.test(err.message) ? "Incorrect email or password." : err.message); })
+      .then(function () { b.disabled = false; b.classList.remove("loading"); });
+  });
+  $("#forgot").addEventListener("click", function () {
+    var email = $("#l-email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { loginStatus("bad", "Type your email address above first, then tap Forgot password."); $("#l-email").focus(); return; }
+    authFetch("recover?redirect_to=" + encodeURIComponent(SITE + "/admin.html"), { email: email })
+      .then(function () { loginStatus("ok", "If that email belongs to an admin, a reset link is on its way. Check your inbox."); })
+      .catch(function (err) { loginStatus("bad", err.message); });
+  });
+  $("#newpass-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var p = $("#n-pass").value;
+    if (p.length < 10) { loginStatus("bad", "Use at least 10 characters."); return; }
+    authFetch("user", { password: p }, "PUT").then(function () { loginStatus("ok", "Password updated."); return start(); })
+      .catch(function (err) { loginStatus("bad", err.message); });
+  });
+  $("#logout").addEventListener("click", function () {
+    var t = session && session.access_token;
+    if (t) fetch(SB + "/auth/v1/logout", { method: "POST", headers: { apikey: ANON, Authorization: "Bearer " + t } }).catch(function () {});
+    store(null); showLogin(); loginStatus("ok", "You have signed out.");
+  });
+
+  /* ---------- App shell ---------- */
+  var ROLE = null, ME = null;
+  var TABS = [
+    { id: "overview", label: "Overview", roles: ["super_admin", "content", "support", "finance"] },
+    { id: "enquiries", label: "Enquiries", roles: ["super_admin", "support", "finance"] },
+    { id: "pricing", label: "Pricing", roles: ["super_admin", "finance"] },
+    { id: "articles", label: "Articles", roles: ["super_admin", "content"] },
+    { id: "subscribers", label: "Subscribers", roles: ["super_admin", "content", "support"] },
+    { id: "team", label: "Team & activity", roles: ["super_admin"] }
+  ];
+  var ROLE_NAMES = { super_admin: "Super Administrator", content: "Content Administrator", support: "Customer Support", finance: "Finance Administrator" };
+  function can(tab) { return TABS.filter(function (t) { return t.id === tab; })[0].roles.indexOf(ROLE) > -1; }
+
+  function start() {
+    return api("admins?select=role,email&user_id=eq." + session.user.id).then(function (x) {
+      if (!x.data || !x.data.length) { store(null); showLogin("This account does not have admin access."); return; }
+      ROLE = x.data[0].role; ME = x.data[0].email;
+      $("#login-view").hidden = true; $("#app-view").hidden = false;
+      $("#who").textContent = ME + " · " + ROLE_NAMES[ROLE];
+      var tabs = $("#tabs"); tabs.innerHTML = "";
+      TABS.filter(function (t) { return t.roles.indexOf(ROLE) > -1; }).forEach(function (t) {
+        var b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.id = "t-" + t.id; b.textContent = t.label;
+        b.setAttribute("aria-controls", "p-" + t.id); b.addEventListener("click", function () { open(t.id); }); tabs.appendChild(b);
+      });
+      var want = (location.hash || "").replace("#", "");
+      open(TABS.some(function (t) { return t.id === want && t.roles.indexOf(ROLE) > -1; }) ? want : "overview");
+    });
+  }
+  function open(id) {
+    document.querySelectorAll(".a-tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.id === "t-" + id)); });
+    document.querySelectorAll(".a-panel").forEach(function (p) { p.classList.toggle("on", p.id === "p-" + id); });
+    try { history.replaceState(null, "", "#" + id); } catch (e) {}
+    ({ overview: overview, enquiries: enquiries, pricing: pricing, articles: articles, subscribers: subscribers, team: team })[id]();
+  }
+
+  /* ---------- Overview ---------- */
+  function overview() {
+    var p = $("#p-overview");
+    p.innerHTML = '<div class="a-h"><h2>Welcome back</h2><a class="btn btn-line btn-sm" href="index.html" target="_blank" rel="noopener">View website</a></div><div class="kpis" id="kpis"></div><div id="ov-recent" style="margin-top:28px"></div>';
+    var items = [];
+    if (can("enquiries")) items.push(["New enquiries", count("enquiries?status=eq.new")], ["All enquiries", count("enquiries")]);
+    if (can("subscribers")) items.push(["Active subscribers", count("subscribers?status=eq.active")]);
+    if (can("articles")) items.push(["Published articles", count("posts?status=eq.published")]);
+    Promise.all(items.map(function (i) { return i[1]; })).then(function (vals) {
+      $("#kpis").innerHTML = items.map(function (i, n) { return '<div class="kpi"><b>' + esc(vals[n]) + '</b><span>' + esc(i[0]) + '</span></div>'; }).join("") || '<p class="muted">Choose a section above.</p>';
+    });
+    if (can("enquiries")) api("enquiries?select=id,created_at,request_type,name,service,status&order=created_at.desc&limit=5").then(function (x) {
+      $("#ov-recent").innerHTML = '<div class="a-h"><h2 style="font-size:1.2rem">Latest enquiries</h2><button class="btn btn-line btn-sm" type="button" id="ov-all">See all</button></div>' + enqRows(x.data);
+      $("#ov-all").addEventListener("click", function () { open("enquiries"); });
+      bindEnqRows($("#ov-recent"), x.data);
+    }).catch(function (e) { $("#ov-recent").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+  }
+
+  /* ---------- Enquiries ---------- */
+  var SVC = {"corporate-websites": "Corporate Website Development", "ecommerce": "E-commerce Development", "custom-software": "Custom Software Development", "mobile-apps": "Mobile Application Development", "ai-solutions": "AI Solutions and Integration", "automation": "Business Process Automation", "enterprise": "Enterprise Software Solutions", "cloud-database": "Database and Cloud Solutions", "api-integration": "API Development and Integration", "maintenance-support": "Software Maintenance and Technical Support", "consulting": "Technology Consulting", "ui-ux": "UI/UX Design", "trader-os": "Sunrose Trader OS", "shepherd-os": "Shepherd OS", "partnership": "Partnership enquiry", "other": "Something else"}, BUD = {"under-300k": "Under ₦300,000", "300k-700k": "₦300,000 – ₦700,000", "700k-2m": "₦700,000 – ₦2,000,000", "over-2m": "Above ₦2,000,000", "web-starter": "Website Starter package", "web-professional": "Website Professional package", "web-premium": "Website Premium package", "web-enterprise": "Website Enterprise package", "international": "International project (USD/GBP)", "not-sure": "Not sure yet"};
+  var TYPE_LABEL = { quote: "Quote", consultation: "Consultation", general: "General" };
+  var STATUSES = ["new", "contacted", "quoted", "won", "lost", "closed"];
+  var ENQ = [];
+  function enqRows(rows) {
+    if (!rows || !rows.length) return '<div class="empty">No enquiries yet. They will appear here when people use the website form.</div>';
+    return '<div class="rows">' + rows.map(function (r) {
+      return '<button type="button" class="row" data-id="' + r.id + '"><small class="d">' + esc(fmtDate(r.created_at, true)) + '</small><span><strong>' + esc(r.name) + '</strong><span class="sub">' + esc(TYPE_LABEL[r.request_type] || "") + ' · ' + esc(SVC[r.service] || r.service || "") + '</span></span><span class="pill s-' + esc(r.status) + '">' + esc(r.status) + '</span></button>';
+    }).join("") + '</div>';
+  }
+  function bindEnqRows(root, rows) { root.querySelectorAll(".row[data-id]").forEach(function (b) { b.addEventListener("click", function () { open("enquiries"); showEnquiry(Number(b.getAttribute("data-id"))); }); }); }
+  function enquiries() {
+    var p = $("#p-enquiries");
+    p.innerHTML = '<div class="a-h"><h2>Enquiries</h2><button class="btn btn-line btn-sm" type="button" id="enq-refresh">Refresh</button></div>' +
+      '<div id="enq-detail"></div><div class="filters">' +
+      '<label class="sr-only" for="f-status">Status</label><select id="f-status"><option value="">All statuses</option>' + STATUSES.map(function (s) { return '<option value="' + s + '">' + s[0].toUpperCase() + s.slice(1) + '</option>'; }).join("") + '</select>' +
+      '<label class="sr-only" for="f-type">Type</label><select id="f-type"><option value="">All types</option><option value="quote">Quotes</option><option value="consultation">Consultations</option><option value="general">General</option></select>' +
+      '<label class="sr-only" for="f-q">Search</label><input id="f-q" type="search" placeholder="Search name, email, subject"></div><div id="enq-list"><p class="muted">Loading…</p></div>';
+    var load = function () {
+      var q = "enquiries?select=*&order=created_at.desc&limit=300";
+      if ($("#f-status").value) q += "&status=eq." + $("#f-status").value;
+      if ($("#f-type").value) q += "&request_type=eq." + $("#f-type").value;
+      api(q).then(function (x) { ENQ = x.data || []; draw(); }).catch(function (e) { $("#enq-list").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+    };
+    var draw = function () {
+      var term = $("#f-q").value.trim().toLowerCase();
+      var rows = ENQ.filter(function (r) { return !term || [r.name, r.email, r.subject, r.company].join(" ").toLowerCase().indexOf(term) > -1; });
+      $("#enq-list").innerHTML = enqRows(rows);
+      $("#enq-list").querySelectorAll(".row").forEach(function (b) { b.addEventListener("click", function () { showEnquiry(Number(b.getAttribute("data-id"))); }); });
+    };
+    $("#f-status").addEventListener("change", load); $("#f-type").addEventListener("change", load); $("#f-q").addEventListener("input", draw);
+    $("#enq-refresh").addEventListener("click", load);
+    load();
+  }
+  function waLink(phone) {
+    var d = String(phone || "").replace(/\D/g, ""); if (!d) return "";
+    if (d.indexOf("0") === 0 && d.length === 11) d = "234" + d.slice(1);
+    return "https://wa.me/" + d;
+  }
+  function showEnquiry(id) {
+    var go = function (r) {
+      var box = $("#enq-detail"); if (!box) return;
+      var wa = waLink(r.phone);
+      var fields = [["Received", fmtDate(r.created_at, true)], ["Type", TYPE_LABEL[r.request_type]], ["Email", r.email], ["Phone / WhatsApp", r.phone], ["Company", r.company], ["Country", r.country], ["Service", SVC[r.service] || r.service], ["Budget", BUD[r.budget] || r.budget], ["Preferred date", r.preferred_date], ["Preferred time", r.preferred_time], ["Meeting", r.meeting_mode], ["Subject", r.subject], ["Sent from", r.page]].filter(function (f) { return f[1]; });
+      box.innerHTML = '<div class="detail"><div class="a-h" style="margin-top:0"><h2 style="font-size:1.3rem">' + esc(r.name) + '</h2><button type="button" class="btn btn-line btn-sm" id="d-close">Close</button></div>' +
+        '<dl class="kv">' + fields.map(function (f) { return "<dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("") + '</dl>' +
+        '<div class="msg">' + esc(r.message) + '</div>' +
+        '<div class="form-grid" style="margin-bottom:16px"><div class="field"><label for="d-status">Status</label><select id="d-status">' + STATUSES.map(function (s) { return '<option value="' + s + '"' + (s === r.status ? " selected" : "") + '>' + s[0].toUpperCase() + s.slice(1) + '</option>'; }).join("") + '</select></div>' +
+        '<div class="field full"><label for="d-notes">Private notes</label><textarea id="d-notes" style="min-height:100px" maxlength="5000">' + esc(r.notes) + '</textarea></div></div>' +
+        '<div class="btns"><button type="button" class="btn btn-gold btn-sm" id="d-save">Save</button>' +
+        '<a class="btn btn-line btn-sm" href="mailto:' + esc(r.email) + '?subject=' + encodeURIComponent("Re: " + (r.subject || "Your enquiry")) + '">Reply by email</a>' +
+        (wa ? '<a class="btn btn-line btn-sm" href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>' : "") +
+        (ROLE === "super_admin" ? '<button type="button" class="btn btn-danger btn-sm" id="d-del">Delete</button>' : "") + '</div></div>';
+      $("#d-close").addEventListener("click", function () { box.innerHTML = ""; });
+      $("#d-save").addEventListener("click", function () {
+        api("enquiries?id=eq." + r.id, { method: "PATCH", prefer: "return=minimal", body: { status: $("#d-status").value, notes: $("#d-notes").value, updated_at: new Date().toISOString() } })
+          .then(function () { r.status = $("#d-status").value; r.notes = $("#d-notes").value; toast("Enquiry saved."); var row = document.querySelector('#enq-list .row[data-id="' + r.id + '"] .pill'); if (row) { row.className = "pill s-" + r.status; row.textContent = r.status; } })
+          .catch(function (e) { toast(e.message, true); });
+      });
+      var del = $("#d-del"); if (del) { var armed = false; del.addEventListener("click", function () {
+        if (!armed) { armed = true; del.textContent = "Tap again to delete"; setTimeout(function () { armed = false; del.textContent = "Delete"; }, 4000); return; }
+        api("enquiries?id=eq." + r.id, { method: "DELETE", prefer: "return=minimal" }).then(function () { toast("Enquiry deleted."); box.innerHTML = ""; ENQ = ENQ.filter(function (x) { return x.id !== r.id; }); var el = document.querySelector('#enq-list .row[data-id="' + r.id + '"]'); if (el) el.remove(); }).catch(function (e) { toast(e.message, true); });
+      }); }
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    var found = ENQ.filter(function (x) { return x.id === id; })[0];
+    if (found) go(found); else api("enquiries?select=*&id=eq." + id).then(function (x) { if (x.data && x.data[0]) { ENQ.push(x.data[0]); go(x.data[0]); } });
+  }
+
+  /* ---------- Pricing ---------- */
+  function pricing() {
+    var p = $("#p-pricing");
+    p.innerHTML = '<div class="a-h"><h2>Pricing</h2></div><p class="muted">Changes appear on the website within seconds. Leave the price empty to show <b>Custom</b>. Untick "Use on website" to fall back to the price printed in the page.</p>' +
+      '<div class="callout" style="margin:0 0 18px;border:1px solid rgba(247,165,49,.35);border-radius:12px;padding:14px 16px;background:rgba(247,165,49,.06);font-size:.92rem">Changing a Sunrose Trader OS price here only changes what the website shows. You must also update the plan amount in <b>Paystack</b>, otherwise members will be charged the old price.</div><div class="rows" id="plan-list"><p class="muted">Loading…</p></div>';
+    api("plans?select=*&order=sort.asc").then(function (x) {
+      $("#plan-list").innerHTML = (x.data || []).map(function (r) {
+        return '<div class="plan-row" data-key="' + esc(r.key) + '"><div class="pn"><strong style="font-family:var(--head);color:var(--text)">' + esc(r.name) + '</strong><div class="help" style="margin:2px 0 0">' + esc(r.period || "") + ' · updated ' + esc(fmtDate(r.updated_at)) + '</div></div>' +
+          '<div><label for="pp-' + esc(r.key) + '">Price</label><input id="pp-' + esc(r.key) + '" type="number" min="0" step="1" inputmode="numeric" value="' + (r.price == null ? "" : esc(r.price)) + '" placeholder="Custom"></div>' +
+          '<div><label for="pc-' + esc(r.key) + '">Currency</label><select id="pc-' + esc(r.key) + '">' + ["NGN", "USD", "GBP"].map(function (c) { return '<option' + (c === r.currency ? " selected" : "") + '>' + c + '</option>'; }).join("") + '</select></div>' +
+          '<label class="chk"><input type="checkbox"' + (r.active ? " checked" : "") + '> Use on website</label>' +
+          '<button type="button" class="btn btn-gold btn-sm">Save</button></div>';
+      }).join("") || '<div class="empty">No plans found. Run the setup SQL first.</div>';
+      $("#plan-list").querySelectorAll(".plan-row").forEach(function (row) {
+        row.querySelector("button").addEventListener("click", function () {
+          var key = row.getAttribute("data-key"), v = row.querySelector("input[type=number]").value.trim();
+          if (v !== "" && (isNaN(Number(v)) || Number(v) < 0)) { toast("Enter a valid price.", true); return; }
+          api("plans?key=eq." + encodeURIComponent(key), { method: "PATCH", prefer: "return=minimal", body: { price: v === "" ? null : Number(v), currency: row.querySelector("select").value, active: row.querySelector("input[type=checkbox]").checked, updated_at: new Date().toISOString() } })
+            .then(function () { toast("Price saved. The website now shows the new price."); }).catch(function (e) { toast(e.message, true); });
+        });
+      });
+    }).catch(function (e) { $("#plan-list").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+  }
+
+  /* ---------- Articles ---------- */
+  var slugify = function (s) { return String(s).toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80); };
+  function articles() {
+    var p = $("#p-articles");
+    p.innerHTML = '<div class="a-h"><h2>Articles</h2><button class="btn btn-gold btn-sm" type="button" id="a-new">New article</button></div><div id="a-editor"></div><div class="rows" id="a-list"><p class="muted">Loading…</p></div>' +
+      '<p class="help" style="margin-top:18px">Published articles appear on the Insights page automatically. The six original articles are built into the website and are not listed here.</p>';
+    $("#a-new").addEventListener("click", function () { editPost(null); });
+    var load = function () {
+      api("posts?select=id,slug,title,status,published_at,updated_at&order=updated_at.desc").then(function (x) {
+        var rows = x.data || [];
+        $("#a-list").innerHTML = rows.length ? rows.map(function (r) {
+          return '<button type="button" class="row" data-id="' + r.id + '"><small class="d">' + esc(fmtDate(r.updated_at)) + '</small><span><strong>' + esc(r.title) + '</strong><span class="sub">/' + esc(r.slug) + '</span></span><span class="pill s-' + esc(r.status) + '">' + esc(r.status) + '</span></button>';
+        }).join("") : '<div class="empty">No articles yet. Tap <b>New article</b> to write your first one.</div>';
+        $("#a-list").querySelectorAll(".row").forEach(function (b) { b.addEventListener("click", function () { api("posts?select=*&id=eq." + b.getAttribute("data-id")).then(function (y) { editPost(y.data[0]); }); }); });
+      }).catch(function (e) { $("#a-list").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+    };
+    articles.reload = load; load();
+  }
+  function editPost(post) {
+    var isNew = !post; post = post || { title: "", slug: "", tag: "", summary: "", body: "", status: "draft" };
+    var slugTouched = !isNew;
+    var box = $("#a-editor");
+    box.innerHTML = '<div class="detail"><div class="a-h" style="margin-top:0"><h2 style="font-size:1.3rem">' + (isNew ? "New article" : "Edit article") + '</h2><button type="button" class="btn btn-line btn-sm" id="e-close">Close</button></div>' +
+      '<div class="form-grid">' +
+      '<div class="field full"><label for="e-title">Title</label><input id="e-title" maxlength="200" value="' + esc(post.title) + '"></div>' +
+      '<div class="field"><label for="e-slug">Web address (slug)</label><input id="e-slug" maxlength="90" value="' + esc(post.slug) + '"><span class="help">sunrosetechnologies.com/article.html?slug=<b id="e-slug-show">' + esc(post.slug) + '</b></span></div>' +
+      '<div class="field"><label for="e-tag">Category</label><input id="e-tag" maxlength="60" value="' + esc(post.tag) + '" placeholder="e.g. Artificial Intelligence"></div>' +
+      '<div class="field full"><label for="e-summary">Summary (one or two sentences)</label><textarea id="e-summary" style="min-height:80px" maxlength="400">' + esc(post.summary) + '</textarea></div>' +
+      '<div class="field full"><label for="e-body">Article text</label><textarea id="e-body" style="min-height:320px" maxlength="60000">' + esc(post.body) + '</textarea>' +
+      '<span class="help">Leave a blank line between paragraphs. Start a line with <b>## </b> for a heading, <b>- </b> for a list item, <b>&gt; </b> for a quote. Wrap words in <b>**double stars**</b> for bold.</span></div></div>' +
+      '<div class="btns" style="margin-top:18px"><button type="button" class="btn btn-line btn-sm" id="e-draft">Save as draft</button><button type="button" class="btn btn-gold btn-sm" id="e-pub">' + (post.status === "published" ? "Update published article" : "Publish") + '</button>' +
+      (post.status === "published" && post.slug ? '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="article.html?slug=' + encodeURIComponent(post.slug) + '">View on website</a>' : "") +
+      (!isNew ? '<button type="button" class="btn btn-danger btn-sm" id="e-del">Delete</button>' : "") + '</div></div>';
+    var t = $("#e-title"), s = $("#e-slug");
+    t.addEventListener("input", function () { if (!slugTouched) { s.value = slugify(t.value); $("#e-slug-show").textContent = s.value; } });
+    s.addEventListener("input", function () { slugTouched = true; $("#e-slug-show").textContent = s.value; });
+    $("#e-close").addEventListener("click", function () { box.innerHTML = ""; });
+    var save = function (status) {
+      var data = { title: t.value.trim(), slug: slugify(s.value || t.value), tag: $("#e-tag").value.trim(), summary: $("#e-summary").value.trim(), body: $("#e-body").value, status: status, updated_at: new Date().toISOString() };
+      if (data.title.length < 3) { toast("Please add a title.", true); return; }
+      if (data.slug.length < 3) { toast("Please add a web address (slug).", true); return; }
+      if (status === "published" && !post.published_at) data.published_at = new Date().toISOString();
+      var req = isNew ? api("posts", { method: "POST", prefer: "return=representation", body: data }) : api("posts?id=eq." + post.id, { method: "PATCH", prefer: "return=representation", body: data });
+      req.then(function (x) { var saved = x.data && x.data[0]; toast(status === "published" ? "Article published." : "Draft saved."); if (saved) editPost(saved); if (articles.reload) articles.reload(); })
+        .catch(function (e) { toast(/duplicate|unique/i.test(e.message) ? "That web address is already used by another article." : e.message, true); });
+    };
+    $("#e-draft").addEventListener("click", function () { save("draft"); });
+    $("#e-pub").addEventListener("click", function () { save("published"); });
+    var del = $("#e-del"); if (del) { var armed = false; del.addEventListener("click", function () {
+      if (!armed) { armed = true; del.textContent = "Tap again to delete"; setTimeout(function () { armed = false; del.textContent = "Delete"; }, 4000); return; }
+      api("posts?id=eq." + post.id, { method: "DELETE", prefer: "return=minimal" }).then(function () { toast("Article deleted."); box.innerHTML = ""; articles.reload(); }).catch(function (e) { toast(e.message, true); });
+    }); }
+    box.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* ---------- Subscribers ---------- */
+  function subscribers() {
+    var p = $("#p-subscribers");
+    p.innerHTML = '<div class="a-h"><h2>Newsletter subscribers</h2><button class="btn btn-line btn-sm" type="button" id="s-csv">Download active list (CSV)</button></div><div id="s-list"><p class="muted">Loading…</p></div>';
+    api("subscribers?select=id,email,status,created_at,unsubscribed_at&order=created_at.desc&limit=5000").then(function (x) {
+      var rows = x.data || [], active = rows.filter(function (r) { return r.status === "active"; });
+      $("#s-list").innerHTML = '<p class="muted">' + active.length + ' active · ' + (rows.length - active.length) + ' unsubscribed</p>' + (rows.length ? '<div class="rows">' + rows.map(function (r) {
+        return '<div class="row" style="cursor:default"><small class="d">' + esc(fmtDate(r.created_at)) + '</small><span><strong style="font-family:var(--body);font-weight:600">' + esc(r.email) + '</strong></span><span class="pill s-' + esc(r.status) + '">' + esc(r.status) + '</span></div>';
+      }).join("") + '</div>' : '<div class="empty">No subscribers yet. People can subscribe from the footer of every page.</div>');
+      $("#s-csv").addEventListener("click", function () {
+        var csv = "email,subscribed\n" + active.map(function (r) { return '"' + r.email.replace(/"/g, '""') + '",' + r.created_at.slice(0, 10); }).join("\n");
+        var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "sunrose-subscribers.csv"; document.body.appendChild(a); a.click(); a.remove();
+      });
+    }).catch(function (e) { $("#s-list").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+  }
+
+  /* ---------- Team & activity (super admin) ---------- */
+  function team() {
+    var p = $("#p-team");
+    p.innerHTML = '<div class="a-h"><h2>Admin team</h2></div><div id="team-list" class="rows"><p class="muted">Loading…</p></div>' +
+      '<div class="detail" style="margin-top:20px"><h3>Add a team member</h3><ol class="muted" style="padding-left:1.2em;font-size:.94rem"><li>In Supabase, open <b>Authentication → Users → Add user</b>, enter their email and a temporary password, and tick <b>Auto Confirm User</b>.</li><li>Fill in the box below, then copy the SQL into <b>SQL Editor</b> and run it.</li></ol>' +
+      '<div class="form-grid"><div class="field"><label for="tm-email">Their email</label><input id="tm-email" type="email"></div><div class="field"><label for="tm-role">Role</label><select id="tm-role"><option value="content">Content Administrator</option><option value="support">Customer Support</option><option value="finance">Finance Administrator</option><option value="super_admin">Super Administrator</option></select></div></div>' +
+      '<div class="code" id="tm-sql" style="margin-top:14px"></div></div>' +
+      '<div class="a-h" style="margin-top:34px"><h2 style="font-size:1.2rem">Recent activity</h2></div><div id="audit" class="rows"><p class="muted">Loading…</p></div>';
+    var sql = function () { var e = $("#tm-email").value.trim().replace(/'/g, "''") || "their@email.com"; $("#tm-sql").textContent = "insert into public.admins (user_id, email, role)\nselect id, email, '" + $("#tm-role").value + "' from auth.users where email = '" + e + "';"; };
+    $("#tm-email").addEventListener("input", sql); $("#tm-role").addEventListener("change", sql); sql();
+    api("admins?select=user_id,email,role,created_at&order=created_at.asc").then(function (x) {
+      $("#team-list").innerHTML = (x.data || []).map(function (r) {
+        var me = r.user_id === session.user.id;
+        return '<div class="row" style="cursor:default;grid-template-columns:1fr auto auto" data-uid="' + esc(r.user_id) + '"><span><strong>' + esc(r.email) + (me ? " (you)" : "") + '</strong><span class="sub">since ' + esc(fmtDate(r.created_at)) + '</span></span>' +
+          '<select aria-label="Role for ' + esc(r.email) + '"' + (me ? " disabled" : "") + ' style="min-height:42px;border-radius:10px;border:1px solid var(--line-2);background:#0A1A31;color:var(--text);padding:6px 10px">' + Object.keys(ROLE_NAMES).map(function (k) { return '<option value="' + k + '"' + (k === r.role ? " selected" : "") + '>' + ROLE_NAMES[k] + '</option>'; }).join("") + '</select>' +
+          (me ? "<span></span>" : '<button type="button" class="btn btn-danger btn-sm">Remove</button>') + '</div>';
+      }).join("");
+      $("#team-list").querySelectorAll(".row[data-uid]").forEach(function (row) {
+        var uid = row.getAttribute("data-uid"), sel = row.querySelector("select"), rm = row.querySelector("button");
+        sel.addEventListener("change", function () { api("admins?user_id=eq." + uid, { method: "PATCH", prefer: "return=minimal", body: { role: sel.value } }).then(function () { toast("Role updated."); }).catch(function (e) { toast(e.message, true); }); });
+        if (rm) { var armed = false; rm.addEventListener("click", function () {
+          if (!armed) { armed = true; rm.textContent = "Tap again"; setTimeout(function () { armed = false; rm.textContent = "Remove"; }, 4000); return; }
+          api("admins?user_id=eq." + uid, { method: "DELETE", prefer: "return=minimal" }).then(function () { toast("Admin access removed."); row.remove(); }).catch(function (e) { toast(e.message, true); });
+        }); }
+      });
+    }).catch(function (e) { $("#team-list").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+    api("audit_log?select=at,user_email,table_name,action,row_ref&order=at.desc&limit=60").then(function (x) {
+      var rows = x.data || [];
+      $("#audit").innerHTML = rows.length ? rows.map(function (r) {
+        return '<div class="row" style="cursor:default"><small class="d">' + esc(fmtDate(r.at, true)) + '</small><span><strong style="font-family:var(--body);font-weight:600">' + esc(r.action.toLowerCase()) + ' · ' + esc(r.table_name) + ' ' + esc(r.row_ref || "") + '</strong><span class="sub">' + esc(r.user_email || "system") + '</span></span><span></span></div>';
+      }).join("") : '<div class="empty">No activity yet.</div>';
+    }).catch(function (e) { $("#audit").innerHTML = '<p class="muted">' + esc(e.message) + '</p>'; });
+  }
+
+  /* ---------- Boot ---------- */
+  var h = location.hash || "";
+  if (h.indexOf("access_token=") > -1) {
+    var q = {}; h.slice(1).split("&").forEach(function (kv) { var p = kv.split("="); q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ""); });
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    session = { access_token: q.access_token, refresh_token: q.refresh_token, expires_at: Date.now() + (Number(q.expires_in) || 3600) * 1000, user: null };
+    fetch(SB + "/auth/v1/user", { headers: { apikey: ANON, Authorization: "Bearer " + q.access_token } }).then(function (r) { return r.json(); }).then(function (u) {
+      session.user = { id: u.id, email: u.email }; store(session);
+      if (q.type === "recovery" || q.type === "invite") {
+        $("#login-view").hidden = false; $("#login-form").hidden = true; $("#newpass-form").hidden = false;
+        $("#login-title").textContent = "Set a new password"; $("#login-sub").textContent = u.email || "";
+      } else start();
+    }).catch(function () { store(null); showLogin("This link has expired. Please request a new one."); });
+  } else if (h.indexOf("error=") > -1) {
+    showLogin("This link is invalid or has expired. Please request a new one.");
+  } else {
+    session = load();
+    if (session) start().catch(function () { store(null); showLogin(); }); else showLogin();
+  }
+})();
+</script>
+</body>
+</html>
