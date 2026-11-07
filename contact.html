@@ -259,7 +259,41 @@ var SITE_CONFIG = {
     form.querySelectorAll("input[name=request_type]").forEach(function (r) { r.addEventListener("change", applyType); });
     if (q.type && titles[q.type]) { var pre = form.querySelector("input[name=request_type][value=" + q.type + "]"); if (pre) pre.checked = true; }
     if (q.service) { var sel = form.elements.service; for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === q.service) sel.selectedIndex = i; }
-    if (q.plan && form.elements.budget) { /* plan chosen on pricing page */ var b = form.elements.budget; for (var k = 0; k < b.options.length; k++) if (b.options[k].value === q.plan) b.selectedIndex = k; }
+
+    /* Budget options change with the service selected */
+    var N = function (a, b) { return "₦" + a + (b ? " – ₦" + b : ""); };
+    var BUDGET_SETS = {
+      websites: [["web-starter", "Starter package (₦200,000)"], ["web-professional", "Professional package (₦400,000)"], ["web-premium", "Premium package (₦700,000)"], ["web-enterprise", "Enterprise (custom quote)"]],
+      ecommerce: [["ec-1", "Under " + N("500,000")], ["ec-2", N("500,000", "1,500,000")], ["ec-3", N("1,500,000", "4,000,000")], ["ec-4", "Above " + N("4,000,000")]],
+      apps: [["app-1", "Under " + N("1,000,000")], ["app-2", N("1,000,000", "3,000,000")], ["app-3", N("3,000,000", "7,000,000")], ["app-4", "Above " + N("7,000,000")]],
+      software: [["sw-1", "Under " + N("1,000,000")], ["sw-2", N("1,000,000", "3,000,000")], ["sw-3", N("3,000,000", "10,000,000")], ["sw-4", "Above " + N("10,000,000")]],
+      ai: [["ai-1", "Under " + N("500,000")], ["ai-2", N("500,000", "2,000,000")], ["ai-3", N("2,000,000", "5,000,000")], ["ai-4", "Above " + N("5,000,000")]],
+      support: [["sup-1", "Under " + N("50,000") + " per month"], ["sup-2", N("50,000", "150,000") + " per month"], ["sup-3", "Above " + N("150,000") + " per month"]],
+      advice: [["adv-1", "Under " + N("300,000")], ["adv-2", N("300,000", "1,000,000")], ["adv-3", "Above " + N("1,000,000")]],
+      trader: [["trader-monthly", "Monthly plan (₦39,500 per month)"], ["trader-yearly", "Yearly plan (₦330,000 per year)"]],
+      shepherd: [["sh-1", "Single church"], ["sh-2", "2–5 branches"], ["sh-3", "More than 5 branches"]],
+      general: [["gen-1", "Under " + N("500,000")], ["gen-2", N("500,000", "2,000,000")], ["gen-3", N("2,000,000", "5,000,000")], ["gen-4", "Above " + N("5,000,000")]]
+    };
+    var SERVICE_SET = {
+      "corporate-websites": "websites", "ecommerce": "ecommerce", "mobile-apps": "apps", "ui-ux": "advice", "consulting": "advice",
+      "custom-software": "software", "enterprise": "software", "ai-solutions": "ai", "automation": "ai", "cloud-database": "ai",
+      "api-integration": "ai", "maintenance-support": "support", "trader-os": "trader", "shepherd-os": "shepherd"
+    };
+    var BUDGET_LABEL = { trader: "Which plan are you interested in?", shepherd: "Size of your church" };
+    var budgetEl = form.elements.budget, budgetLab = form.querySelector('label[for="budget"]');
+    function fillBudget(keep) {
+      if (!budgetEl) return;
+      var setName = SERVICE_SET[form.elements.service.value] || "general";
+      var opts = BUDGET_SETS[setName].concat(setName === "trader" ? [] : [["international", "International project (USD/GBP)"]]).concat([["not-sure", "Not sure yet"]]);
+      var prev = keep || budgetEl.value;
+      budgetEl.innerHTML = '<option value="">' + (setName === "trader" ? "Choose a plan" : setName === "shepherd" ? "Choose a size" : "Choose a range") + '</option>' +
+        opts.map(function (o) { return '<option value="' + o[0] + '">' + escapeHtml(o[1]) + '</option>'; }).join("");
+      for (var i = 0; i < budgetEl.options.length; i++) if (budgetEl.options[i].value === prev) budgetEl.selectedIndex = i;
+      if (budgetLab) budgetLab.innerHTML = escapeHtml(BUDGET_LABEL[setName] || "Estimated budget") + ' <span>(optional)</span>';
+    }
+    form.elements.service.addEventListener("change", function () { fillBudget(); });
+    fillBudget(q.plan || "");
+    if (false && q.plan && form.elements.budget) { /* plan chosen on pricing page */ var b = form.elements.budget; for (var k = 0; k < b.options.length; k++) if (b.options[k].value === q.plan) b.selectedIndex = k; }
     applyType();
 
     var rules = {
@@ -289,7 +323,7 @@ var SITE_CONFIG = {
       var t = type();
       var data = {
         request_type: t, name: val("name"), email: val("email"), phone: val("phone"), company: val("company"), country: val("country"),
-        service: form.elements.service.value, budget: t === "quote" ? val("budget") : "",
+        service: form.elements.service.value, budget: t === "quote" && budgetEl && budgetEl.value ? budgetEl.options[budgetEl.selectedIndex].text : "",
         preferred_date: t === "consultation" ? val("preferred_date") : "", preferred_time: t === "consultation" ? val("preferred_time") : "",
         meeting_mode: t === "consultation" ? val("meeting_mode") : "",
         subject: val("subject"), message: val("message"), page: location.pathname,
@@ -298,7 +332,7 @@ var SITE_CONFIG = {
       btn.disabled = true; btn.classList.add("loading");
       post("contact", data).then(function (res) {
         if (res.ok) {
-          form.reset(); started = Date.now(); applyType();
+          form.reset(); started = Date.now(); fillBudget(); applyType();
           var what = t === "quote" ? "quote request" : t === "consultation" ? "consultation request" : "message";
           show("ok", "<strong>Thank you, your " + what + " has been sent.</strong> We will reply to " + escapeHtml(data.email) + " as soon as possible.");
         } else {
